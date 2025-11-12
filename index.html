@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💖</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Arial', sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* First background */
+    .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://plus.unsplash.com/premium_photo-1670934158264-e4bb3db04301?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center/cover;
+      z-index: -2;
+    }
+
+    /* Second background that will fade in */
+    .background-fade {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://i.ytimg.com/vi/69f71W_2Y08/maxresdefault.jpg') no-repeat center center/cover;
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
+      z-index: -1;
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      max-width: 350px;
+      z-index: 1;
+    }
+
+    .anime-girl {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: opacity 3s ease-in-out;
+    }
+
+    h1 {
+      color: #e63946;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      font-size: 16px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .btn-yes {
+      background: #ff6b81;
+      color: white;
+    }
+
+    .btn-no {
+      background: #ffe066;
+      color: #333;
+    }
+
+    .btn:hover {
+      transform: scale(1.1);
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 1.4rem;
+      color: #e63946;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Layered backgrounds -->
+  <div class="background"></div>
+  <div class="background-fade" id="backgroundFade"></div>
+
+  <!-- Hidden background musics -->
+  <audio id="bg-music" src="cinnamon girl - lana del rey (best part  sped up  3 min loop).mp3" preload="auto" loop></audio>
+  <audio id="yes-music" src="Made with Clipchamp.mp3" preload="auto" loop></audio> <!-- Put Happy Song Link -->
+
+  <div class="container">
+    <img src="https://sketchandfun.com/wp-content/uploads/2025/01/Sleepy-Anime-Girl-Drawing-683x1024.jpg" alt="Anime Girl" class="anime-girl" id="anime-img">
+    <h1 id="question">Will you be my Gurly!? ❤️</h1>
+    <div class="buttons">
+      <button class="btn btn-yes" onclick="showMessage('Yay! You made my day! 💖💖💖')">Yes</button>
+      <button class="btn btn-no" onclick="askAgain()">No</button>
+    </div>
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    let noClickCount = 0;
+    let musicStarted = false;
+    let volumeInterval = null;
+    const music = document.getElementById('bg-music');
+    const yesMusic = document.getElementById('yes-music');
+    const fadeBg = document.getElementById('backgroundFade');
+    const mainBg = document.querySelector('.background');
+    const animeImage = document.getElementById('anime-img');
+    const question = document.getElementById('question');
+
+    const questions = [
+      "Please!? 🥺",
+      "Think again... pretty please? 🥰",
+      "Don't break my heart 💔, say yes?",
+      "I won't give up! 💌",
+      "I love you🌹"
+    ];
+
+    function showMessage(text) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.textContent = text;
+      messageDiv.style.display = 'block';
+
+      // ✅ Instantly change image and background on YES
+      mainBg.style.backgroundImage = "url('https://img.freepik.com/free-photo/digital-art-character-looking-moon_23-2151639249.jpg')";
+      fadeBg.style.opacity = 0;
+      animeImage.src = "https://img.freepik.com/premium-vector/anime-smiling-boy_18591-75602.jpg?semt=ais_hybrid";
+      animeImage.style.opacity = 1;
+
+      // ✅ Stop background "No" music smoothly
+      if (musicStarted) {
+        let vol = music.volume;
+        const fadeOutInterval = setInterval(() => {
+          if (vol > 0.05) {
+            vol -= 0.05;
+            music.volume = vol;
+          } else {
+            clearInterval(fadeOutInterval);
+            music.pause(); // Full stop when faded out
+            music.currentTime = 0; // Reset
+          }
+        }, 200);
+      }
+
+      // ✅ Play "Yes" music
+      yesMusic.volume = 0.5; // Adjust volume as needed
+      yesMusic.play().catch(error => console.log("Music play error: ", error)); // Catch play error (in case browser blocks autoplay)
+    }
+
+    function askAgain() {
+      const messageDiv = document.getElementById('message');
+      messageDiv.style.display = 'none';
+
+      // Start music on first "No"
+      if (!musicStarted) {
+        music.volume = 0;
+        music.play();
+        musicStarted = true;
+
+        // Gradually increase volume
+        let vol = 0;
+        volumeInterval = setInterval(() => {
+          if (vol < 0.5) {
+            vol += 0.05;
+            music.volume = vol;
+          } else {
+            clearInterval(volumeInterval);
+          }
+        }, 500);
+      }
+
+      // Gradually increase background fade opacity
+      let currentOpacity = parseFloat(window.getComputedStyle(fadeBg).getPropertyValue("opacity"));
+      if (currentOpacity < 1) {
+        fadeBg.style.opacity = (currentOpacity + 0.2).toFixed(2);
+      }
+
+      // Change questions
+      question.textContent = noClickCount < questions.length ? questions[noClickCount] : "Okay... I'll wait forever if I have to 💖😢";
+      if (noClickCount >= questions.length) animeImage.style.opacity = 0.3;
+      noClickCount++;
+    }
+  </script>
+
+</body>
+</html>
